@@ -12,7 +12,6 @@ async function worker() {
       for (let i in res) {
         var obj = res[i];
         const browser = await puppeteer.launch({
-          executablePath: "/usr/bin/chromium-browser",
           args: [
             "--disable-gpu",
             "--disable-setuid-sandbox",
@@ -30,13 +29,9 @@ async function worker() {
           const metrics = await page.metrics();
 
           //console.log(metrics.TaskDuration);
-          await page.screenshot({
-            path: `./screenshots/${obj.url_id}_${metrics.Timestamp}.png`,
-          });
-          const screenshotname = `${obj.url_id}_${metrics.Timestamp}.png`;
 
           sql.query(
-            `INSERT INTO stats_table (user_id, url_id, time_stamp, status_code, layout_duration, recalcstyle_duration, script_duration, task_duration, screenshot) values('${obj.user_id}','${obj.url_id}','${time}','200','${metrics.LayoutDuration}','${metrics.RecalcStyleDuration}','${metrics.ScriptDuration}','${metrics.TaskDuration}','${screenshotname}')`,
+            `INSERT INTO stats_table (user_id, url_id, time_stamp, status_code, layout_duration, recalcstyle_duration, script_duration, task_duration) values('${obj.user_id}','${obj.url_id}','${time}','200','${metrics.LayoutDuration}','${metrics.RecalcStyleDuration}','${metrics.ScriptDuration}','${metrics.TaskDuration}')`,
             function (err, res) {
               if (err) {
                 console.log(err);
