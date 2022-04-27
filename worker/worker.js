@@ -4,7 +4,6 @@ const nodemailer = require("nodemailer");
 
 const iPad = puppeteer.devices["iPad Pro landscape"];
 const browserFetcher = puppeteer.createBrowserFetcher();
-const revisionInfo = await browserFetcher.download("938248");
 
 async function worker() {
   sql.query("SELECT * FROM url_table;", async function (err, res) {
@@ -13,6 +12,7 @@ async function worker() {
     } else {
       for (let i in res) {
         var obj = res[i];
+        const revisionInfo = await browserFetcher.download("938248");
         const browser = await puppeteer.launch({
           executablePath: `${revisionInfo}./snap/bin/chromium`,
           headless: false,
