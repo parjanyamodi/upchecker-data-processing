@@ -13,7 +13,7 @@ async function worker() {
         var obj = res[i];
         const revisionInfo = await browserFetcher.download("938248");
         const browser = await puppeteer.launch({
-          executablePath: "/snap/bin/chromium",
+          executablePath: `${revisionInfo}./snap/bin/chromium`,
           headless: false,
           args: [
             "--disable-gpu",
