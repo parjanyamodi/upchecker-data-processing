@@ -11,8 +11,10 @@ async function worker() {
     } else {
       for (let i in res) {
         var obj = res[i];
+        const revisionInfo = await browserFetcher.download("938248");
         const browser = await puppeteer.launch({
           executablePath: "/snap/bin/chromium",
+          headless: false,
           args: [
             "--disable-gpu",
             "--disable-setuid-sandbox",
