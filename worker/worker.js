@@ -1,6 +1,7 @@
 const puppeteer = require("puppeteer");
 const sql = require("../db/db");
 const nodemailer = require("nodemailer");
+import fetch from "node-fetch";
 
 const iPad = puppeteer.devices["iPad Pro landscape"];
 
@@ -11,52 +12,59 @@ async function worker() {
     } else {
       for (let i in res) {
         var obj = res[i];
-        const browser = await puppeteer.launch({
-          executablePath: `/snap/bin/chromium`,
-          headless: false,
-          args: [
-            "--disable-gpu",
-            "--disable-setuid-sandbox",
-            "--no-sandbox",
-            "--no-zygote",
-          ],
-        });
-        const time = new Date();
         try {
-          const page = await browser.newPage();
-          await page.emulate(iPad);
-          await page.setDefaultTimeout(20000);
-          await page.goto(`https://${obj.url}`);
+          const response = await fetch(`https://${obj.url}`);
+          const status_code = await response.status;
+          const time = new Date();
+          const browser = await puppeteer.launch({
+            //executablePath: `/snap/bin/chromium`,
+            headless: false,
+            args: [
+              "--disable-gpu",
+              "--disable-setuid-sandbox",
+              "--no-sandbox",
+              "--no-zygote",
+            ],
+          });
 
-          const metrics = await page.metrics();
+          if (status_code == 200) {
+            try {
+              const page = await browser.newPage();
+              await page.emulate(iPad);
+              await page.setDefaultTimeout(30000);
+              await page.goto(`https://${obj.url}`);
 
-          //console.log(metrics.TaskDuration);
+              const metrics = await page.metrics();
 
-          sql.query(
-            `INSERT INTO stats_table (user_id, url_id, time_stamp, status_code, layout_duration, recalcstyle_duration, script_duration, task_duration) values('${obj.user_id}','${obj.url_id}','${time}','200','${metrics.LayoutDuration}','${metrics.RecalcStyleDuration}','${metrics.ScriptDuration}','${metrics.TaskDuration}')`,
-            function (err, res) {
-              if (err) {
-                console.log(err);
-              } else {
-                return null;
-              }
+              //console.log(metrics.TaskDuration);
+
+              sql.query(
+                `INSERT INTO stats_table (user_id, url_id, time_stamp, status_code, layout_duration, recalcstyle_duration, script_duration, task_duration) values('${obj.user_id}','${obj.url_id}','${time}','${status_code}','${metrics.LayoutDuration}','${metrics.RecalcStyleDuration}','${metrics.ScriptDuration}','${metrics.TaskDuration}')`,
+                function (err, res) {
+                  if (err) {
+                    console.log(err);
+                  } else {
+                    return null;
+                  }
+                }
+              );
+            } catch (err) {
+            } finally {
+              await browser.close();
             }
-          );
-        } catch (error) {
-          const screenshotname = "error";
-          sql.query(
-            `INSERT INTO stats_table (user_id, url_id, time_stamp, status_code, layout_duration, recalcstyle_duration, script_duration, task_duration, screenshot) values('${obj.user_id}','${obj.url_id}','${time}','${error}','','','','','${screenshotname}')`,
-            function (err, res) {
-              if (err) {
-                console.log(err);
-              } else {
-                sendMail(obj.user_id, error);
+          } else {
+            sql.query(
+              `INSERT INTO stats_table (user_id, url_id, time_stamp, status_code, layout_duration, recalcstyle_duration, script_duration, task_duration, screenshot) values('${obj.user_id}','${obj.url_id}','${time}','${error}','0','0','0','0')`,
+              function (err, res) {
+                if (err) {
+                  console.log(err);
+                } else {
+                  sendMail(obj.user_id, error);
+                }
               }
-            }
-          );
-        } finally {
-          await browser.close();
-        }
+            );
+          }
+        } catch (error) {}
       }
     }
   });
