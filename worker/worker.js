@@ -12,6 +12,7 @@ async function worker() {
       for (let i in res) {
         var obj = res[i];
         const browser = await puppeteer.launch({
+          executablePath: "/snap/bin/chromium",
           args: [
             "--disable-gpu",
             "--disable-setuid-sandbox",
