@@ -1,8 +1,14 @@
+//Worker Import statement
 const worker = require("./worker/worker");
+//Connect To DataBase
+require("./db/db");
 
-function callWorker() {
+require("dotenv").config();
+
+
+const callWorker = async () => {
   console.log("Worker called!");
   worker();
 }
-
-setInterval(callWorker, 3000);
+callWorker()
+//setInterval(callWorker, 10000);

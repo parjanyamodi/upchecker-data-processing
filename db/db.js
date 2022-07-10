@@ -1,16 +1,7 @@
-const mysql = require("mysql");
-const dbData = require("./db.config");
+require("dotenv").config();
 
-const connection = mysql.createConnection({
-  host: dbData.host,
-  user: dbData.user,
-  password: dbData.password,
-  database: dbData.database,
+const mongoose = require("mongoose");
+const uri = process.env.MONGO_URI
+mongoose.connect(uri).then(() => {
+  console.log("DataBase connection successful");
 });
-
-connection.connect((err, result) => {
-  if (err) console.log(err);
-  console.log("Database-Connection was successful!");
-});
-
-module.exports = connection;
