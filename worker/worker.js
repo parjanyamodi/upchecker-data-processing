@@ -7,7 +7,7 @@ const worker = async () => {
   try {
     const urls = await Urls.find({})
     urls.map(async (user) => {
-      readWebsite(user)
+      readWebsite(user, time)
     })
   }
   catch (e) {

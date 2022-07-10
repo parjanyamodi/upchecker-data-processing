@@ -1,26 +1,7 @@
 const nodemailer = require("nodemailer");
 
-exports.sendErrorMail = async () => {
-    var transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-            user: "parjanyamodi@gmail.com",
-            pass: "WinMac@2020gmail",
-        },
-    });
-    var mailOptions = {
-        from: "parjanyamodi@gmail.com",
-        to: `${res[0].email}`,
-        subject: "Error in Website",
-        text: `${error}`,
-    };
-
-    transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-            console.log(error);
-        } else {
-            return null;
-        }
-    });
+const sendErrorMail = async (url, e) => {
+    console.log("Response \nURL: ", url.url, "\nName: ", url.name, "\nError: ", e.message ? e.message : e, "\n")
 
 }
+module.exports = sendErrorMail
