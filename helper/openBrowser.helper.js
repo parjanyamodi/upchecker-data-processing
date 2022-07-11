@@ -1,7 +1,7 @@
 const puppeteer = require("puppeteer");
 const sendErrorMail = require("./sendErrorMail.helper");
 
-const openBrowser = async (url, time) => {
+const openBrowser = async (url, statusCode, time) => {
     try {
         const iPad = puppeteer.devices["iPad Pro landscape"];
         const launchBrowser = await puppeteer.launch({
@@ -21,9 +21,10 @@ const openBrowser = async (url, time) => {
             await newTab.goto(url.url);
             const metrics = await newTab.metrics();
             //console.log(metrics);
+            console.log({ urlId: url.urlId, url: url.url, response: statusCode, metrics, time })
         }
         catch (e) {
-            console.log({ url: url.url, response: e.message, time })
+            console.log({ urlId: url.urlId, url: url.url, response: e.message, time })
             sendErrorMail(url, e)
         }
         finally {
@@ -31,7 +32,8 @@ const openBrowser = async (url, time) => {
         }
     }
     catch (e) {
-        console.log({ url: url.url, response: e.message, time })
+        console.log({ urlId: url.urlId, url: url.url, response: e.message, time })
+
     }
 }
 module.exports = openBrowser

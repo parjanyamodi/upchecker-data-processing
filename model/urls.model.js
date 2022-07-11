@@ -11,5 +11,5 @@ const UrlsSchema = new mongoose.Schema(
         }],
     }
 )
-const Urls = mongoose.model("Urls", UrlsSchema)
+const Urls = mongoose.model("urls", UrlsSchema)
 module.exports = Urls
