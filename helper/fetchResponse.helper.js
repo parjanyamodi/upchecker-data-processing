@@ -1,5 +1,5 @@
 const openBrowser = require("./openBrowser.helper");
-const sendErrorMail = require("./sendErrorMail.helper");
+const errorOccured = require("./errorOccured.helper");
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 class HTTPResponseError extends Error {
@@ -22,11 +22,10 @@ const fetchResponse = async (url, time) => {
     try {
         const response = await fetch(url.url);
         const statusCode = await response.status;
-        statusCode >= 200 && statusCode < 300 ? openBrowser(url, statusCode, time) : sendErrorMail(url, checkStatus(response))
+        statusCode >= 200 && statusCode < 300 ? openBrowser(url, statusCode, time) : errorOccured(url, checkStatus(response), time)
     }
     catch (e) {
-        console.log({ urlId: url.urlId, url: url.url, response: e.message, time })
-        sendErrorMail(url, e)
+        errorOccured(url, e, time)
     }
 }
 

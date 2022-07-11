@@ -1,5 +1,5 @@
 const puppeteer = require("puppeteer");
-const sendErrorMail = require("./sendErrorMail.helper");
+const errorOccured = require("./errorOccured.helper");
 
 const openBrowser = async (url, statusCode, time) => {
     try {
@@ -24,16 +24,14 @@ const openBrowser = async (url, statusCode, time) => {
             console.log({ urlId: url.urlId, url: url.url, response: statusCode, metrics, time })
         }
         catch (e) {
-            console.log({ urlId: url.urlId, url: url.url, response: e.message, time })
-            sendErrorMail(url, e)
+            errorOccured(url, e, time)
         }
         finally {
             await launchBrowser.close();
         }
     }
     catch (e) {
-        console.log({ urlId: url.urlId, url: url.url, response: e.message, time })
-
+        errorOccured(url, e, time)
     }
 }
 module.exports = openBrowser
